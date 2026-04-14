@@ -1,0 +1,36 @@
+.btn {
+  font-size: 1rem;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  transition: transform 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.btn:disabled {
+  color: grey;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.icon svg {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn:hover {
+  outline: none;
+  transform: scale(1.1);
+}
+
+.btn:focus {
+  outline: none;
+}

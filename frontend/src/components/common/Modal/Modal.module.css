@@ -1,0 +1,23 @@
+.overlay {
+  background: #8e8d8d80;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+.modal {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 0.8rem;
+  width: 100%;
+  min-width: 18rem;
+  max-width: 50rem;
+  text-align: center;
+  box-shadow: 0 0 0 3px #adadad;
+}
+
+.title {
+  margin-block: 0 2rem;
+}

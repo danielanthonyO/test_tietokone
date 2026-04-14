@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int            @id @default(autoincrement())
+  email           String         @unique
+  createdAt       DateTime       @default(now())
+  password        String
+  updatedAt       DateTime       @updatedAt
+  role            UserRole       @default(WORKER)
+  avatar          String?
+  name            String?
+  phone           String?
+  assignedRepairs RepairTicket[] @relation("AssignedTickets")
+}
+
+model Customer {
+  id        Int            @id @default(autoincrement())
+  customerCode String?     @unique
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  type      CustomerType
+  devices   Device[]
+  repairs   RepairTicket[]
+}
+
+model Device {
+  id           Int            @id @default(autoincrement())
+  deviceCode  String?          @unique
+  customerId   Int
+  type         String
+  brand        String?
+  model        String?
+  serialNumber String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  customer     Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  repairs      RepairTicket[]
+}
+
+model RepairTicket {
+  id                 Int             @id @default(autoincrement())
+  repairCode         String?                 @unique
+  customerId         Int
+  deviceId           Int
+  status             RepairStatus    @default(RECEIVED)
+  problemDescription String
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  assignedToId       Int?
+  estimate           CostEstimate?
+  assignedTo         User?           @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  customer           Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  device             Device          @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  history            TicketHistory[]
+}
+
+model TicketHistory {
+  id        Int          @id @default(autoincrement())
+  ticketId  Int
+  status    RepairStatus
+  note      String?
+  createdAt DateTime     @default(now())
+  ticket    RepairTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model CostEstimate {
+  id             Int            @id @default(autoincrement())
+  estimateCode    String?       @unique
+  ticketId       Int            @unique
+  currency       String         @default("EUR")
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  status         EstimateStatus @default(PENDING)
+  approvalToken  String?        @unique
+  decidedAt      DateTime?
+  expiresAt      DateTime?
+
+  laborCost      Int
+  partsCost      Int
+  note           String?
+
+  subtotal       Float
+  vatRate        Float          @default(0.255)
+  vatAmount      Float
+  totalCost      Float
+
+  ticket         RepairTicket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  ADMIN
+  WORKER
+  TRAINEE
+}
+
+enum CustomerType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum RepairStatus {
+  RECEIVED
+  DIAGNOSTICS
+  WAITING_APPROVAL
+  IN_REPAIR
+  READY
+  DELIVERED
+  NOT_SERVICED
+}
+
+enum EstimateStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}

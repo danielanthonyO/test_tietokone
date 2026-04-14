@@ -1,0 +1,136 @@
+.customerCard,
+.editMode {
+  width: 100%;
+  max-width: 50rem;
+  min-width: 18rem;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  border: var(--card-border);
+  background: var(--card-bg);
+  transition: all 0.15s ease;
+}
+.editMode {
+  background: var(--card-hover-bg);
+  padding: 2rem;
+}
+.customerCard:hover {
+  background: #fff4e1;
+  transform: translateY(-1px);
+  box-shadow: 0 1rem 1.5rem rgba(31, 26, 20, 0.1);
+}
+
+/* Card header section*/
+.cardHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  min-height: 4rem;
+}
+
+.cardHeaderContent {
+  text-align: left;
+  margin: 0;
+}
+
+.name,
+.type {
+  margin: 0;
+}
+
+.type {
+  color: #7a4f1e;
+  font-size: 0.8rem;
+  padding-top: 1rem;
+}
+
+/* Expanded info section */
+.extraInfo,
+.formWrapper {
+  display: grid;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #efe2d2;
+}
+.formRow:focus-within {
+  border: 1px solid #1251ff;
+}
+.formRow p {
+  margin: 0;
+}
+.label {
+  width: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.orders {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.orderLink {
+  padding: 0.5rem 1rem;
+  border-radius: 5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid;
+  transition: all 0.2s ease;
+}
+.orderLink:hover {
+  filter: saturate(3);
+  font-weight: bold;
+}
+
+/* Action buttons under expanded card, in edit and delete modal */
+.actions,
+.deleteActions,
+.modalActions,
+.editActions {
+  display: flex;
+  justify-content: center;
+  gap: 6rem;
+  margin-top: 2rem;
+  max-width: 50rem;
+  min-width: 18rem;
+}
+.actions button,
+.deleteActions button,
+.modalActions button,
+.editActions button {
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+/* Edit modal */
+.input,
+.customerTypeInput {
+  outline: none;
+  border: none;
+  text-align: left;
+  display: flex;
+  flex: 1;
+}
+
+.customerTypeInput {
+  width: 30%;
+  text-align: right;
+}

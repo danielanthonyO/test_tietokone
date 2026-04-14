@@ -1,0 +1,46 @@
+.customersContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Search input */
+
+.searchInput {
+  outline: none;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #b1b1b1;
+  background: #ffffff;
+  font-weight: bold;
+  width: 100%;
+  min-width: 18rem;
+  max-width: 35rem;
+  cursor: text;
+  transition: all 0.15s ease;
+}
+.searchInput:focus {
+  border: 1px solid #1251ff;
+}
+.searchAndCreate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 2rem;
+  margin-block: 2rem;
+}
+
+/* Create button */
+.createBtn {
+  background: #f59e0b;
+  color: #fff;
+  padding: 1rem;
+  border: 1px solid #1251ff;
+  border-radius: 1rem;
+  font-weight: bold;
+}
+.createBtn button {
+  font-weight: bold;
+}
