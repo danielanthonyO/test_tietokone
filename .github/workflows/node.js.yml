@@ -33,6 +33,10 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       NODE_ENV: test
+      JWT_SECRET: dev_secret
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_BASE_URL: http://127.0.0.1:5173
+      PORT: 3000
 
     steps:
       - name: Checkout code
@@ -57,7 +61,7 @@ jobs:
 
       - name: Run backend unit tests
         working-directory: backend
-        run: npm run test
+        run: npm run test -- --runInBand
 
   integration-test:
     name: Backend Integration Test
@@ -82,6 +86,9 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       NODE_ENV: test
+      JWT_SECRET: dev_secret
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_BASE_URL: http://127.0.0.1:5173
       PORT: 3000
 
     steps:
@@ -99,19 +106,23 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Install wait-on
-        run: npm install -g wait-on
-
       - name: Setup Prisma
         working-directory: backend
         run: |
           npx prisma generate
           npx prisma db push
 
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Start backend
         working-directory: backend
         run: |
-          npm run start > backend.log 2>&1 &
+          npm run start:prod > backend.log 2>&1 &
           echo $! > backend.pid
 
       - name: Show backend logs before wait
@@ -121,11 +132,11 @@ jobs:
           cat backend.log || true
 
       - name: Wait for backend
-        run: wait-on http://127.0.0.1:3000 --timeout 60000
+        run: wait-on http://127.0.0.1:3000 --timeout 120000
 
       - name: Run integration tests
         working-directory: backend
-        run: npm run test:e2e
+        run: npm run test:e2e -- --runInBand
 
       - name: Show backend logs on failure
         if: failure()
@@ -155,6 +166,9 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       NODE_ENV: test
+      JWT_SECRET: dev_secret
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_BASE_URL: http://127.0.0.1:5173
       PORT: 3000
       VITE_API_URL: http://127.0.0.1:3000
 
@@ -178,31 +192,35 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
-      - name: Install wait-on
-        run: npm install -g wait-on
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
       - name: Setup Prisma
         working-directory: backend
         run: |
           npx prisma generate
           npx prisma db push
 
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Install wait-on
+        run: npm install -g wait-on
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       - name: Start backend
         working-directory: backend
         run: |
-          npm run start > backend.log 2>&1 &
+          npm run start:prod > backend.log 2>&1 &
           echo $! > backend.pid
 
       - name: Start frontend
         working-directory: frontend
+        env:
+          VITE_API_URL: http://127.0.0.1:3000
         run: |
           npm run dev -- --host 0.0.0.0 > frontend.log 2>&1 &
           echo $! > frontend.pid
-        env:
-          VITE_API_URL: http://127.0.0.1:3000
 
       - name: Show app logs before wait
         run: |
@@ -213,10 +231,10 @@ jobs:
           cat frontend/frontend.log || true
 
       - name: Wait for backend
-        run: wait-on http://127.0.0.1:3000 --timeout 60000
+        run: wait-on http://127.0.0.1:3000 --timeout 120000
 
       - name: Wait for frontend
-        run: wait-on http://127.0.0.1:5173 --timeout 60000
+        run: wait-on http://127.0.0.1:5173 --timeout 120000
 
       - name: Run Playwright tests
         run: npm run test:playwright
