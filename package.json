@@ -1,0 +1,11 @@
+{
+    "name": "e2e-tests",
+    "private": true,
+    "scripts": {
+        "test:playwright": "playwright test"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.59.1",
+        "wait-on": "^8.0.0"
+    }
+}
