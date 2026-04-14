@@ -1,165 +1,65 @@
-name: CI Pipeline
+integration-test:
+  runs-on: ubuntu-latest
+  needs: backend-unit-test
 
-on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+  services:
+    postgres:
+      image: postgres:15
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: testdb
+      ports:
+        - 5432:5432
+      options: >-
+        --health-cmd="pg_isready -U postgres"
+        --health-interval=10s
+        --health-timeout=5s
+        --health-retries=5
 
-jobs:
-  backend-unit-test:
-    runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
-    steps:
-      - uses: actions/checkout@v4
+    - name: Install backend deps
+      run: |
+        cd backend
+        npm install
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
+    - name: Install wait-on
+      run: npm install -D wait-on
 
-      - name: Install backend deps
-        run: |
-          cd backend
-          npm install
+    - name: Setup Prisma
+      run: |
+        cd backend
+        npx prisma generate
+        npx prisma db push
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
 
-      - name: Setup Prisma
-        run: |
-          cd backend
-          npx prisma generate
-          npx prisma db push
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+    - name: Start backend
+      run: |
+        cd backend
+        npm run start > backend.log 2>&1 &
+        echo $! > backend.pid
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
 
-      - name: Run unit tests
-        run: |
-          cd backend
-          npm run test
+    - name: Print backend logs
+      run: |
+        cd backend
+        sleep 10
+        cat backend.log || true
 
-  integration-test:
-    runs-on: ubuntu-latest
-    needs: backend-unit-test
+    - name: Wait for backend
+      run: npx wait-on http://127.0.0.1:3000 --timeout 60000
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install backend
-        run: |
-          cd backend
-          npm install
-
-      - name: Setup Prisma
-        run: |
-          cd backend
-          npx prisma generate
-          npx prisma db push
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-
-      - name: Start backend
-        run: |
-          cd backend
-          npm run start &
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-
-      - name: Wait for backend
-        run: npx wait-on http://127.0.0.1:3000
-
-      - name: Run integration tests
-        run: |
-          cd backend
-          npm run test:e2e
-
-  playwright-test:
-    runs-on: ubuntu-latest
-    needs: integration-test
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install backend
-        run: |
-          cd backend
-          npm install
-
-      - name: Install frontend
-        run: |
-          cd frontend
-          npm install
-
-      - name: Install root deps (Playwright)
-        run: npm install
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Setup Prisma
-        run: |
-          cd backend
-          npx prisma generate
-          npx prisma db push
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-
-      - name: Start backend
-        run: |
-          cd backend
-          npm run start &
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-
-      - name: Start frontend
-        run: |
-          cd frontend
-          npm run dev &
-
-      - name: Wait for apps
-        run: |
-          npx wait-on http://127.0.0.1:3000
-          npx wait-on http://127.0.0.1:5173
-
-      - name: Run Playwright tests
-        run: npm run test:playwright
+    - name: Run integration tests
+      run: |
+        cd backend
+        npm run test:e2e
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
