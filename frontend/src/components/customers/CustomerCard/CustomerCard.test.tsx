@@ -4,9 +4,11 @@ import { vi } from 'vitest';
 import { renderWithProviders } from '../../../tests/render';
 import CustomerCard from './CustomerCard';
 
-const invalidateQueries = vi.fn();
-const mutate = vi.fn();
-const toastSuccess = vi.fn();
+const { invalidateQueries, mutate, toastSuccess } = vi.hoisted(() => ({
+  invalidateQueries: vi.fn(),
+  mutate: vi.fn(),
+  toastSuccess: vi.fn(),
+}));
 
 vi.mock('@tanstack/react-query', async () => {
   const actual = await vi.importActual<typeof import('@tanstack/react-query')>('@tanstack/react-query');

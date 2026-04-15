@@ -41,7 +41,7 @@ export const createCustomer = async (
 export const updateCustomer = async (
   updatedCustomer: UpdateCustomer,
 ): Promise<Customer> => {
-  const { id, createdAt, updatedAt, ...body } = updatedCustomer;
+  const { id, ...body } = updatedCustomer;
   console.log("PATCH body:", body);
   const res = await axios.patch(`${customerApi}/${id}`, body).catch((err) => {
     console.log("POST error response:", err.response?.data);
