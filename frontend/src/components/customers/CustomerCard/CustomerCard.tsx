@@ -13,7 +13,7 @@ import {
   deleteCustomer,
   type Customer,
 } from "../../../API/customers/customersApi.ts";
-import { ordersQueryOptions } from "../../../api/orders/ordersQueries.ts";
+import { ordersQueryOptions } from "../../../API/orders/ordersQueries.ts";
 import { Link } from "react-router";
 import EditCustomerForm from "./EditCustomerForm.tsx";
 import Button from "../../common/Button/Button.tsx";
@@ -51,7 +51,7 @@ function CustomerCard({
     deleteCustomerMutation.mutate(customer.id);
   };
   const filteredOrders =
-    orders?.filter((order) => order.customer_id === customer.id) || [];
+    orders?.filter((order) => String(order.customer_id) === String(customer.id)) || [];
   return (
     <>
       {!isEditing && (
