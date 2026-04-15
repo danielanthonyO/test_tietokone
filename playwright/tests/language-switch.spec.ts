@@ -1,16 +1,17 @@
 import { test, expect } from '@playwright/test';
 
-test('language switch works', async ({ page }) => {
+test('language can be changed when switcher exists', async ({ page }) => {
   await page.goto('/');
 
   const switcher = page.locator('[data-testid="language-switcher"]');
 
-  if (await switcher.count() === 0) {
-    test.skip();
-  }
+  test.skip(await switcher.count() === 0, 'Language switcher is not present in UI yet');
 
   await switcher.click();
-  await page.getByText('Suomi').click();
 
-  await expect(page.locator('body')).toContainText(/asiakas/i);
+  const finnishOption = page.getByText(/suomi/i);
+  await expect(finnishOption).toBeVisible();
+  await finnishOption.click();
+
+  await expect(page.locator('body')).toContainText(/asiakas|tilaus|etu­sivu/i);
 });

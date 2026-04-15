@@ -1,15 +1,12 @@
+
 {
-    "name": "e2e-tests",
+    "name": "playwright",
     "private": true,
     "scripts": {
-        "test:playwright": "playwright test"
+      "test:playwright": "playwright test"
     },
     "devDependencies": {
-        "@playwright/test": "^1.59.1",
-        "@types/node": "^25.6.0",
-        "wait-on": "^8.0.0"
-    },
-    "dependencies": {
-        "request": "^2.88.2"
+      "@playwright/test": "^1.55.0",
+      "@types/node": "^24.3.0"
     }
-}
+  }

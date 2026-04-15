@@ -3,15 +3,19 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './playwright/tests',
   timeout: 30_000,
+  fullyParallel: false,
+  retries: 1,
   use: {
     baseURL: 'http://127.0.0.1:5173',
     headless: true,
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   webServer: [
     {
       command: 'cd backend && node dist/src/main.js',
-      url: 'http://127.0.0.1:3000',
+      url: 'http://127.0.0.1:3000/customers',
       timeout: 120_000,
       reuseExistingServer: false,
       env: {

@@ -1,10 +1,16 @@
-import { test, expect } from '../fixtures/customer.fixture';
+import { test } from '../fixtures/customer.fixture';
 
-test('create customer', async ({ customersPage }) => {
+test('customer page loads', async ({ customersPage }) => {
   await customersPage.goto();
+  await customersPage.expectPageLoaded();
+});
 
-  const name = 'Test Customer';
-  await customersPage.createCustomer(name);
+test('create customer flow', async ({ customersPage }) => {
+  const name = `Customer ${Date.now()}`;
 
+  await customersPage.goto();
+  await customersPage.openCreateCustomerForm();
+  await customersPage.fillCustomerName(name);
+  await customersPage.saveCustomer();
   await customersPage.expectCustomerVisible(name);
 });
