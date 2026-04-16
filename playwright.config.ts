@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 30_000,
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
+
   use: {
     baseURL: 'http://localhost:5173',
     headless: true,
@@ -12,6 +13,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
+
   webServer: [
     {
       command: 'cd backend && npm run start',
