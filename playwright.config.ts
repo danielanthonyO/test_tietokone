@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: 'http://localhost:5173',
     headless: true,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
@@ -15,7 +15,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'cd backend && npm run start',
-      url: 'http://127.0.0.1:3000/customers',
+      url: 'http://localhost:3000/customers',
       timeout: 120_000,
       reuseExistingServer: !process.env.CI,
       env: {
@@ -24,16 +24,16 @@ export default defineConfig({
         JWT_SECRET: 'dev_secret',
         JWT_EXPIRES_IN: '7d',
         PORT: '3000',
-        FRONTEND_BASE_URL: 'http://127.0.0.1:5173',
+        FRONTEND_BASE_URL: 'http://localhost:5173',
       },
     },
     {
       command: 'cd frontend && npm run dev -- --host 0.0.0.0',
-      url: 'http://127.0.0.1:5173/customers',
+      url: 'http://localhost:5173/customers',
       timeout: 120_000,
       reuseExistingServer: !process.env.CI,
       env: {
-        VITE_API_URL: 'http://127.0.0.1:3000',
+        VITE_API_URL: 'http://localhost:3000',
       },
     },
   ],
