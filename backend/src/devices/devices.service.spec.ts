@@ -15,7 +15,7 @@ describe('DevicesService', () => {
       findMany: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
-      delete: jest.fn(a),
+      delete: jest.fn(),
     },
   };
 
