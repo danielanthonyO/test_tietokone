@@ -2,8 +2,8 @@
   "name": "repair-shop-monorepo",
   "private": true,
   "scripts": {
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e": "npx playwright@1.55.0 test",
+    "test:e2e:headed": "npx playwright@1.55.0 test --headed"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

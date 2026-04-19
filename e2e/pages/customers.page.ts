@@ -9,53 +9,62 @@ export class CustomersPage {
 
   async expectPageLoaded() {
     await expect(this.page).toHaveURL(/customers/);
-    await expect(this.page.getByRole('heading', { name: /customer/i })).toBeVisible();
+    await expect(
+      this.page.getByRole('heading', { name: /customer/i }),
+    ).toBeVisible();
   }
 
   async openCreateCustomerForm() {
-    await this.page.getByRole('button', { name: /create new customer/i }).click();
+    await this.page
+      .getByRole('button', { name: /create new customer/i })
+      .click();
+
     await expect(this.page.getByText(/add a new customer/i)).toBeVisible();
   }
 
   async createCustomer(name: string, email: string, phone: string) {
     await this.openCreateCustomerForm();
+
     await this.page.locator('input[name="name"]').fill(name);
     await this.page.locator('input[name="email"]').fill(email);
     await this.page.locator('input[name="phone"]').fill(phone);
+
     await this.page.getByRole('button', { name: /^add$/i }).click();
+
+    await expect(this.page.getByText(/add a new customer/i)).not.toBeVisible();
+    await expect(this.page.getByText(name, { exact: true })).toBeVisible();
   }
 
   async search(text: string) {
-    const searchInput = this.page.getByPlaceholder(/search customer/i);
-    await searchInput.fill(text);
+    await this.page.getByPlaceholder(/search customer/i).fill(text);
   }
 
   async expectCustomerVisible(name: string) {
-    await expect(this.page.getByText(name)).toBeVisible();
+    await expect(this.page.getByText(name, { exact: true })).toBeVisible();
+  }
+
+  async expectCustomerNotVisible(name: string) {
+    await expect(this.page.getByText(name, { exact: true })).not.toBeVisible();
   }
 
   async expandCustomer(name: string) {
-    await this.page.getByText(name).click();
+    await this.page.getByText(name, { exact: true }).click();
   }
 
-  async openEditCustomer() {
-    await this.page.getByRole('button', { name: /^edit$/i }).click();
+  async openDeleteCustomer() {
+    await this.page.getByRole('button', { name: /^delete$/i }).click();
+    await expect(
+      this.page.getByText(/delete this customer from the system/i),
+    ).toBeVisible();
   }
 
-  async updatePhone(phone: string) {
-    const phoneInput = this.page.locator('input[name="phone"]');
-    await phoneInput.fill(phone);
-    await this.page.getByRole('button', { name: /^save$/i }).click();
-  }
-
-  async expectPhoneVisible(phone: string) {
-    await expect(this.page.getByText(phone)).toBeVisible();
+  async confirmDeleteCustomer() {
+    await this.page.getByRole('button', { name: /^delete$/i }).last().click();
   }
 
   async deleteCustomer() {
-    await this.page.getByRole('button', { name: /^delete$/i }).click();
-    await expect(this.page.getByText(/delete this customer from the system/i)).toBeVisible();
-    await this.page.getByRole('button', { name: /^delete$/i }).last().click();
+    await this.openDeleteCustomer();
+    await this.confirmDeleteCustomer();
   }
 
   async expectEmptyState() {

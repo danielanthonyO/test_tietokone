@@ -7,8 +7,15 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  const allowedOrigins = [
+    process.env.FRONTEND_BASE_URL,
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+  ].filter((origin): origin is string => Boolean(origin));
+
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
+    credentials: true,
   });
 
   app.useGlobalPipes(
@@ -19,9 +26,9 @@ async function bootstrap() {
     }),
   );
 
- app.useStaticAssets(join(process.cwd(), 'uploads'), {
-  prefix: '/uploads/',
-});
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000);
 }

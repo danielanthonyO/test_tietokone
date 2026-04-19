@@ -56,7 +56,7 @@ function CreateCustomerModal({ isOpen, onClose }: CreateCustomerModalProps) {
   };
   return (
     <Modal isOpen={isOpen} padding=".5rem">
-      <form onSubmit={handleAddCustomer} className={styles.createWrapper}>
+      <form onSubmit={handleAddCustomer} className={styles.createWrapper} noValidate>
         <h3>Add a new customer</h3>
         <div className={styles.formWrapper}>
           <div className={styles.formRow}>

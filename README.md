@@ -1,4 +1,4 @@
-# Tietokonelepuski CRM
+# Tietokonelepuski CRM repair management system
 
 A web-based CRM and service management system for a computer repair business (Leppävaaran Tietokonehuolto).
 
